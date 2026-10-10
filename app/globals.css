@@ -1,17 +1,28 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f8fafc;
-  --foreground: #0f172a;
-  --amber-700: #b45309;
-  --amber-600: #d97706;
+  --background: #f6f1e8;
+  --foreground: #1c1917;
+  --surface: #ffffff;
+  --muted: #78716c;
+  --line: #e7dfd4;
+  --ink: #1c1917;
+  --accent: #7a3418;
+  --accent-hover: #632a13;
+  --accent-soft: #f8efe6;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-line: var(--line);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-soft: var(--accent-soft);
   --font-sans: var(--font-geist-sans);
-  --font-serif: var(--font-newsreader);
   --font-mono: var(--font-geist-mono);
 }
 
@@ -23,10 +34,6 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
-}
-
-.font-serif {
-  font-family: var(--font-newsreader), ui-serif, Georgia, serif;
 }
 
 @keyframes accordion-down {

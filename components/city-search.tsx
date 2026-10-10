@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { MapPin } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { searchCities } from "@/lib/panchang/cities";
+import { placeLabel, searchCities } from "@/lib/panchang/cities";
 import type { GeoLocation } from "@/lib/panchang/types";
 import { cn } from "@/lib/utils";
 
@@ -14,7 +14,7 @@ interface CitySearchProps {
 }
 
 export function CitySearch({ value, onChange, compact }: CitySearchProps) {
-  const [query, setQuery] = useState(value ? `${value.city}, ${value.country}` : "");
+  const [query, setQuery] = useState(value ? placeLabel(value) : "");
   const [open, setOpen] = useState(false);
 
   const results = useMemo(() => searchCities(query), [query]);
@@ -22,14 +22,14 @@ export function CitySearch({ value, onChange, compact }: CitySearchProps) {
   return (
     <div className="relative min-w-0">
       {compact ? (
-        <label className="mb-0.5 block text-[11px] font-medium text-slate-500" htmlFor="city-search">
-          Place
+        <label className="mb-1 block text-xs font-medium text-zinc-600" htmlFor="city-search">
+          Place of passing
         </label>
       ) : null}
       <MapPin
         className={cn(
-          "pointer-events-none absolute left-2.5 h-4 w-4 text-slate-400",
-          compact ? "top-[1.85rem]" : "top-3",
+          "pointer-events-none absolute left-2.5 h-4 w-4 text-zinc-400",
+          compact ? "top-[2.05rem]" : "top-3",
         )}
       />
       <Input
@@ -37,13 +37,9 @@ export function CitySearch({ value, onChange, compact }: CitySearchProps) {
         role="combobox"
         aria-expanded={open}
         aria-autocomplete="list"
-        aria-label="City or location"
-        placeholder="Kathmandu, Nikashi…"
-        className={cn(
-          "pl-8",
-          compact &&
-            "h-10 rounded-md px-2 text-base shadow-none focus-visible:ring-1",
-        )}
+        aria-label="Place of passing"
+        placeholder="Guwahati, Nigeria, Kathmandu"
+        className={cn("pl-9", compact && "h-10 pr-2 text-base")}
         value={query}
         onChange={(e) => {
           setQuery(e.target.value);
@@ -57,10 +53,10 @@ export function CitySearch({ value, onChange, compact }: CitySearchProps) {
       {open && (
         <ul
           role="listbox"
-          className="absolute z-30 mt-1 max-h-48 w-full overflow-auto rounded-lg border border-slate-200 bg-white py-1 shadow-lg"
+          className="absolute z-30 mt-1 max-h-48 w-full overflow-auto rounded-md border border-line bg-white py-1 shadow-md"
         >
           {results.length === 0 && (
-            <li className="px-3 py-2 text-sm text-slate-500">No match.</li>
+            <li className="px-3 py-2 text-sm text-zinc-500">No matching place.</li>
           )}
           {results.map((city) => (
             <li key={city.id}>
@@ -69,19 +65,19 @@ export function CitySearch({ value, onChange, compact }: CitySearchProps) {
                 role="option"
                 aria-selected={value?.id === city.id}
                 className={cn(
-                  "flex w-full flex-col items-start px-3 py-1.5 text-left text-sm hover:bg-amber-50",
-                  value?.id === city.id && "bg-amber-50",
+                  "flex w-full flex-col items-start px-3 py-2 text-left text-sm hover:bg-zinc-50",
+                  value?.id === city.id && "bg-accent-soft",
                 )}
                 onMouseDown={(e) => e.preventDefault()}
                 onClick={() => {
                   onChange(city);
-                  setQuery(`${city.city}, ${city.country}`);
+                  setQuery(placeLabel(city));
                   setOpen(false);
                 }}
               >
-                <span className="font-medium text-slate-900">{city.city}</span>
-                <span className="text-[11px] text-slate-500">
-                  {city.region}, {city.country}
+                <span className="font-medium text-ink">{city.city}</span>
+                <span className="text-xs text-zinc-500">
+                  {city.city === city.country ? city.region : `${city.region}, ${city.country}`}
                 </span>
               </button>
             </li>

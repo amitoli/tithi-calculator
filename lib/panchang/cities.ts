@@ -1,4 +1,5 @@
 import type { GeoLocation } from "./types";
+import { COUNTRIES } from "./countries";
 
 const IST = "Asia/Kolkata";
 
@@ -162,7 +163,15 @@ export const CITIES: GeoLocation[] = [
   { id: "perth", city: "Perth", region: "Western Australia", country: "Australia", latitude: -31.9505, longitude: 115.8605, timeZone: "Australia/Perth" },
   { id: "singapore", city: "Singapore", region: "Singapore", country: "Singapore", latitude: 1.3521, longitude: 103.8198, timeZone: "Asia/Singapore" },
   { id: "doha", city: "Doha", region: "Doha", country: "Qatar", latitude: 25.2854, longitude: 51.531, timeZone: "Asia/Qatar" },
+  ...COUNTRIES,
 ];
+
+export function placeLabel(place: GeoLocation): string {
+  return place.city === place.country ? place.city : `${place.city}, ${place.country}`;
+}
+
+export const DEFAULT_LOCATION: GeoLocation =
+  CITIES.find((place) => place.id === "guwahati") ?? CITIES[0];
 
 export function searchCities(query: string): GeoLocation[] {
   const q = query.trim().toLowerCase();

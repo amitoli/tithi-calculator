@@ -30,7 +30,7 @@ export function ActionBar({ result }: { result: CalculationResult }) {
   }
 
   return (
-    <div className="grid grid-cols-3 gap-1.5">
+    <div className="grid grid-cols-3 gap-2">
       <Button
         onClick={onIcs}
         disabled={busy !== null}
@@ -39,7 +39,7 @@ export function ActionBar({ result }: { result: CalculationResult }) {
         className="h-9 px-2 text-xs"
       >
         <CalendarPlus />
-        {busy === "ics" ? "…" : "Calendar"}
+        {busy === "ics" ? "Preparing" : "Calendar"}
       </Button>
       <Button
         variant="secondary"
@@ -49,7 +49,7 @@ export function ActionBar({ result }: { result: CalculationResult }) {
         className="h-9 px-2 text-xs"
       >
         <FileDown />
-        {busy === "pdf" ? "…" : "PDF"}
+        {busy === "pdf" ? "Preparing" : "PDF"}
       </Button>
       <Button variant="outline" size="sm" className="h-9 px-2 text-xs" asChild>
         <a href={whatsAppShareUrl(result)} target="_blank" rel="noopener noreferrer">

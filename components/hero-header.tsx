@@ -1,10 +1,17 @@
 export function HeroHeader() {
   return (
-    <header className="flex items-baseline justify-between gap-3 px-1 pb-2 pt-1">
-      <h1 className="font-serif text-lg font-semibold tracking-tight text-slate-900 sm:text-xl">
-        Tithi calendar
+    <header className="border-b border-line pb-4">
+      <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-accent">
+        Panchang · Nepal &amp; India
+      </p>
+      <h1 className="mt-1 text-xl font-semibold tracking-tight text-ink sm:text-2xl">
+        Barshik date calculator
       </h1>
-      <p className="truncate text-[11px] text-slate-500">Barkhanta &amp; annual shraddha</p>
+      <p className="mt-1 max-w-2xl text-sm leading-relaxed text-zinc-600">
+        Hindu death anniversary tithi for Barkhanta and annual shraddha. Enter a Nepali month
+        and gatey, or a Gregorian date of passing. The lunar tithi, Adhik Maas, and local sunrise
+        set the date, not the 365-day anniversary.
+      </p>
     </header>
   );
 }

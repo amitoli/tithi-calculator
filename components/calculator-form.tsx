@@ -16,7 +16,7 @@ import {
   tryAdToBs,
   civilFromIso,
 } from "@/lib/calendar/bikram-sambat";
-import { CITIES } from "@/lib/panchang/cities";
+import { DEFAULT_LOCATION } from "@/lib/panchang/cities";
 import { calculateBarshik } from "@/lib/panchang/engine";
 import type {
   CalculationInput,
@@ -28,9 +28,11 @@ import type {
 import { cn } from "@/lib/utils";
 
 const fieldClass =
-  "h-10 rounded-md border border-slate-300 bg-white px-2 text-base text-slate-900 shadow-none focus-visible:border-amber-700 focus-visible:ring-1 focus-visible:ring-amber-700/30";
+  "h-10 rounded-md border border-line bg-white px-2 text-base text-ink shadow-none focus-visible:border-accent focus-visible:ring-2 focus-visible:ring-accent/20";
 
 const selectClass = cn(fieldClass, "w-full min-w-0");
+
+const labelClass = "mb-1 block text-xs font-medium text-zinc-600";
 
 interface CalculatorFormProps {
   onResult: (result: CalculationResult) => void;
@@ -45,7 +47,7 @@ export function CalculatorForm({ onResult }: CalculatorFormProps) {
     isoFromCivil(bsToAd(2080, 8, 15)),
   );
   const [timeOfPassing, setTimeOfPassing] = useState("");
-  const [location, setLocation] = useState<GeoLocation | null>(CITIES[0]);
+  const [location, setLocation] = useState<GeoLocation | null>(DEFAULT_LOCATION);
   const [calendar, setCalendar] = useState<CalendarSystem>("purnimanta");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -104,7 +106,7 @@ export function CalculatorForm({ onResult }: CalculatorFormProps) {
     }
 
     if (!location) {
-      setError("Choose a place.");
+      setError("Choose the place of passing.");
       return;
     }
 
@@ -131,13 +133,13 @@ export function CalculatorForm({ onResult }: CalculatorFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-2">
-      <div className="grid grid-cols-2 items-end gap-1.5 sm:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_auto]">
+    <form onSubmit={handleSubmit} className="space-y-3">
+      <div className="grid grid-cols-2 items-end gap-2 sm:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_auto]">
         <div className="col-span-2 min-w-0 sm:col-span-1">
-          <label className="mb-0.5 block text-[11px] font-medium text-slate-500" htmlFor="bs-year">
-            Nepali (B.S.)
+          <label className={labelClass} htmlFor="bs-year">
+            Nepali date (B.S.)
           </label>
-          <div className="flex min-w-0 gap-1">
+          <div className="flex min-w-0 gap-1.5">
             <Input
               id="bs-year"
               aria-label="B.S. year"
@@ -145,7 +147,7 @@ export function CalculatorForm({ onResult }: CalculatorFormProps) {
               inputMode="numeric"
               min={BS_MIN_YEAR}
               max={BS_MAX_YEAR}
-              className={cn(fieldClass, "w-[4.1rem] shrink-0 px-1 text-center tabular-nums")}
+              className={cn(fieldClass, "w-[4.2rem] shrink-0 px-1.5 text-center tabular-nums")}
               value={Number.isFinite(bsYear) ? bsYear : ""}
               onFocus={() => setDateInputCalendar("bs")}
               onChange={(e) => {
@@ -161,7 +163,7 @@ export function CalculatorForm({ onResult }: CalculatorFormProps) {
             <select
               id="bs-month"
               aria-label="Nepali month"
-              className={cn(selectClass, "min-w-0 flex-1 px-1")}
+              className={cn(selectClass, "min-w-0 flex-1 px-1.5")}
               value={bsMonth}
               onFocus={() => setDateInputCalendar("bs")}
               onChange={(e) => {
@@ -178,7 +180,7 @@ export function CalculatorForm({ onResult }: CalculatorFormProps) {
             <select
               id="bs-gatey"
               aria-label="Gatey"
-              className={cn(selectClass, "w-[3.1rem] shrink-0 px-0.5 text-center")}
+              className={cn(selectClass, "w-[3.4rem] shrink-0 px-1 text-center")}
               value={Math.min(Number.isFinite(bsDay) ? bsDay : 1, gateyMax)}
               onFocus={() => setDateInputCalendar("bs")}
               onChange={(e) => {
@@ -196,15 +198,15 @@ export function CalculatorForm({ onResult }: CalculatorFormProps) {
         </div>
 
         <div className="min-w-0">
-          <label className="mb-0.5 block text-[11px] font-medium text-slate-500" htmlFor="demise-date">
-            Gregorian
+          <label className={labelClass} htmlFor="demise-date">
+            Gregorian date
           </label>
           <Input
             id="demise-date"
             type="date"
             min="1943-04-14"
             max="2043-12-31"
-            className={cn(fieldClass, "w-full min-w-0 px-1.5")}
+            className={cn(fieldClass, "w-full min-w-0 px-2")}
             value={dateOfPassing}
             onFocus={() => setDateInputCalendar("ad")}
             onChange={(e) => {
@@ -214,45 +216,50 @@ export function CalculatorForm({ onResult }: CalculatorFormProps) {
           />
         </div>
 
-        <Button type="submit" className="h-10 w-full shrink-0 px-3 sm:w-auto sm:px-4" disabled={busy}>
-          {busy ? <Loader2 className="animate-spin" /> : "Find"}
+        <Button type="submit" className="h-10 w-full sm:w-auto" disabled={busy}>
+          {busy ? <Loader2 className="animate-spin" /> : "Calculate"}
         </Button>
       </div>
 
-      <div className="grid grid-cols-2 items-end gap-1.5 sm:grid-cols-[minmax(0,1fr)_auto_auto]">
+      <div className="grid grid-cols-2 items-end gap-2 sm:grid-cols-[minmax(0,1fr)_auto_auto]">
         <div className="col-span-2 min-w-0 sm:col-span-1">
           <CitySearch value={location} onChange={setLocation} compact />
         </div>
         <div>
-          <label className="mb-0.5 block text-[11px] font-medium text-slate-500" htmlFor="demise-time">
-            Time
+          <label className={labelClass} htmlFor="demise-time">
+            Time (optional)
           </label>
           <Input
             id="demise-time"
             type="time"
-            className={cn(fieldClass, "w-full px-1.5 sm:w-[6.6rem]")}
+            className={cn(fieldClass, "w-full px-2 sm:w-[7rem]")}
             value={timeOfPassing}
             onChange={(e) => setTimeOfPassing(e.target.value)}
           />
         </div>
         <div>
-          <label className="mb-0.5 block text-[11px] font-medium text-slate-500" htmlFor="calendar-system">
-            System
+          <label className={labelClass} htmlFor="calendar-system">
+            Month system
           </label>
           <select
             id="calendar-system"
-            className={cn(selectClass, "w-full sm:w-[7.2rem]")}
+            className={cn(selectClass, "w-full min-w-[11.5rem]")}
             value={calendar}
             onChange={(e) => setCalendar(e.target.value as CalendarSystem)}
           >
-            <option value="purnimanta">Purnimanta</option>
-            <option value="amanta">Amanta</option>
+            <option value="purnimanta">Purnimanta (Nepal / North)</option>
+            <option value="amanta">Amanta (South / West)</option>
           </select>
         </div>
       </div>
 
+      <p className="text-xs leading-relaxed text-zinc-500">
+        The two calendars stay in sync. Gatey is a B.S. civil day. Shraddha follows the lunar tithi
+        at this place. Leave the time blank if it is unknown.
+      </p>
+
       {error && (
-        <p role="alert" className="text-xs text-red-700">
+        <p role="alert" className="text-sm text-red-700">
           {error}
         </p>
       )}

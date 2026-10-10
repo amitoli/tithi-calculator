@@ -1,14 +1,12 @@
 import { ActionBar } from "@/components/action-bar";
-import { AnnualShraddhaList } from "@/components/annual-shraddha-list";
 import type { CalculationResult } from "@/lib/panchang/types";
-import { formatShortDate } from "@/lib/timezone";
 import { formatBsCompactFromInstant } from "@/lib/calendar/bikram-sambat";
+import { formatCivilDate } from "@/lib/timezone";
 
-function upcomingLabel(result: CalculationResult) {
+function observanceTitle(result: CalculationResult) {
   const next = result.nextAnnual;
-  if (!next) return "Upcoming";
-  if (next.kind === "barshik" || next.yearIndex === 1) return "Next · Barkhanta";
-  return `Next · Shraddha ${next.yearIndex}`;
+  if (!next || next.kind === "barshik" || next.yearIndex === 1) return "Barkhanta";
+  return "Annual shraddha";
 }
 
 export function ResultsDashboard({ result }: { result: CalculationResult }) {
@@ -17,35 +15,39 @@ export function ResultsDashboard({ result }: { result: CalculationResult }) {
   const deathBs = formatBsCompactFromInstant(result.deathMoment, tz);
 
   return (
-    <section id="results" className="flex flex-col gap-2">
-      <p className="px-0.5 text-[12px] leading-snug text-slate-600">
-        <span className="font-medium text-slate-800">{result.deathPanchang.displayName}</span>
-        {" · "}
-        {formatShortDate(result.deathMoment, tz)}
-        {deathBs ? ` · ${deathBs}` : ""}
-        {" · "}
+    <section id="results" className="flex flex-col gap-4" aria-live="polite">
+      <p className="text-sm leading-relaxed text-zinc-700">
+        <span className="font-medium text-ink">Death tithi.</span> {result.deathPanchang.displayName}
+        {", "}
+        {formatCivilDate(result.deathMoment, tz)}
+        {deathBs ? `, ${deathBs} B.S.` : ""}
+        {", "}
         {result.input.location.city}
-        {result.adhik.occurred ? " · Adhik Maas" : ""}
+        {result.input.timeUnknown ? ", time not recorded" : ""}
+        .
       </p>
+      {result.adhik.occurred && (
+        <p className="text-xs text-zinc-500">
+          Adhik Maas ({result.adhik.months.join(", ")}) falls before this date, so it is later than a
+          plain 12-month count.
+        </p>
+      )}
 
       {next && (
-        <div className="rounded-lg border border-amber-200 bg-amber-50/80 px-3 py-2">
-          <p className="text-[10px] font-semibold uppercase tracking-wide text-amber-800">
-            {upcomingLabel(result)}
+        <div className="rounded-lg border border-line border-l-4 border-l-accent bg-accent-soft px-4 py-4">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-accent">
+            {observanceTitle(result)}
           </p>
-          <p className="mt-0.5 font-serif text-lg font-semibold leading-tight text-slate-900 sm:text-xl">
-            {formatShortDate(next.date, tz)}
-            {next.nepaliDate ? (
-              <span className="ml-2 font-sans text-sm font-medium text-slate-600">
-                {formatBsCompactFromInstant(next.date, tz)}
-              </span>
-            ) : null}
+          <p className="mt-1 text-xl font-semibold leading-snug text-ink sm:text-2xl">{next.civilDate}</p>
+          {next.nepaliDate ? <p className="mt-1 text-sm text-zinc-700">{next.nepaliDate}</p> : null}
+          <p className="mt-1 text-sm text-zinc-800">{next.tithiName}</p>
+          <p className="mt-2 text-xs leading-relaxed text-zinc-600">
+            Barkhanta is the first year of the same rite. Each later year is shraddha on this tithi.
+            This is the next one.
           </p>
-          <p className="truncate text-[12px] text-slate-600">{next.tithiName}</p>
         </div>
       )}
 
-      <AnnualShraddhaList result={result} />
       <ActionBar result={result} />
     </section>
   );
