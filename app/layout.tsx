@@ -14,9 +14,9 @@ const newsreader = Newsreader({
 });
 
 export const metadata: Metadata = {
-  title: "Tithi & Barshik Companion",
+  title: "Tithi calendar — Barkhanta & Shraddha",
   description:
-    "Calculate Hindu and Nepali Barshik, annual shraddha, and tithi dates from a B.S. gatey or Gregorian date.",
+    "Find Barkhanta and annual shraddha dates from a Nepali or Gregorian date of passing.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

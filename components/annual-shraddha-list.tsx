@@ -1,65 +1,59 @@
-import { Repeat } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { DualDate } from "@/components/dual-date";
-import type { CalculationResult } from "@/lib/panchang/types";
+import type { CalculationResult, Milestone } from "@/lib/panchang/types";
+import { formatShortDate } from "@/lib/timezone";
 import { cn } from "@/lib/utils";
+import { formatBsCompactFromInstant } from "@/lib/calendar/bikram-sambat";
+
+function rowLabel(item: Milestone) {
+  if (item.kind === "barshik" || item.yearIndex === 1) return "Barkhanta";
+  return `Shraddha ${item.yearIndex ?? ""}`.trim();
+}
 
 export function AnnualShraddhaList({ result }: { result: CalculationResult }) {
+  const tz = result.input.location.timeZone;
+  const now = Date.now();
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-lg">Annual Shraddha calendar</CardTitle>
-        <CardDescription>
-          After the first Barshik / Barkhanta, families continue yearly shraddha on the same
-          death tithi. Dates below are tithi-based (A.D. and B.S.), not the civil 365-day
-          anniversary.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-3">
-        {result.nextAnnual && (
-          <p className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-slate-700">
-            Next upcoming:{" "}
-            <span className="font-medium text-slate-900">{result.nextAnnual.title}</span>
-            {" · "}
-            {result.nextAnnual.civilDate}
-            {result.nextAnnual.nepaliDate ? ` · ${result.nextAnnual.nepaliDate}` : ""}
-          </p>
-        )}
-        <ul className="divide-y divide-slate-100 rounded-xl border border-slate-200">
+    <div className="overflow-hidden rounded-lg border border-slate-200">
+      <table className="w-full table-fixed text-left text-[12px] leading-tight sm:text-[13px]">
+        <thead className="bg-slate-50 text-[10px] font-medium uppercase tracking-wide text-slate-500">
+          <tr>
+            <th className="w-[28%] px-2 py-1 sm:w-[22%]">Rite</th>
+            <th className="w-[36%] px-2 py-1">Gregorian</th>
+            <th className="w-[36%] px-2 py-1">Nepali</th>
+          </tr>
+        </thead>
+        <tbody>
           {result.annualShraddha.map((item) => {
             const isNext = result.nextAnnual?.id === item.id;
-            const isFirst = item.kind === "barshik";
+            const past = item.date.getTime() < now - 12 * 3600 * 1000 && !isNext;
             return (
-              <li
+              <tr
                 key={item.id}
                 className={cn(
-                  "flex gap-3 px-4 py-3",
-                  isNext && "bg-amber-50/80",
+                  "border-t border-slate-100",
+                  isNext && "bg-amber-50 font-medium",
+                  past && "text-slate-400",
                 )}
               >
-                <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-amber-200 bg-white text-amber-800">
-                  <Repeat className="h-4 w-4" aria-hidden />
-                </span>
-                <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <p className="font-semibold text-slate-900">{item.title}</p>
-                    {isFirst && <Badge>Barkhanta</Badge>}
-                    {isNext && <Badge variant="saffron">Next</Badge>}
-                  </div>
-                  <DualDate
-                    gregorian={item.civilDate}
-                    nepali={item.nepaliDate}
-                    gregorianClassName="mt-1 text-sm font-medium"
-                    nepaliClassName="mt-0.5 text-xs"
-                  />
-                  <p className="mt-1 font-serif text-sm italic text-slate-700">{item.tithiName}</p>
-                </div>
-              </li>
+                <td className="truncate px-2 py-0.5">
+                  {rowLabel(item)}
+                  {isNext ? (
+                    <span className="ml-1 text-[10px] font-semibold uppercase text-amber-800">
+                      next
+                    </span>
+                  ) : null}
+                </td>
+                <td className="truncate px-2 py-0.5 tabular-nums">
+                  {formatShortDate(item.date, tz)}
+                </td>
+                <td className="truncate px-2 py-0.5 tabular-nums">
+                  {formatBsCompactFromInstant(item.date, tz)}
+                </td>
+              </tr>
             );
           })}
-        </ul>
-      </CardContent>
-    </Card>
+        </tbody>
+      </table>
+    </div>
   );
 }

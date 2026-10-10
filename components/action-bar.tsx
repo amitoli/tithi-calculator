@@ -3,7 +3,6 @@
 import { CalendarPlus, FileDown, Share2 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { downloadIcs } from "@/lib/export/ics";
 import { downloadRitualPdf } from "@/lib/export/pdf";
 import { whatsAppShareUrl } from "@/lib/export/whatsapp";
@@ -31,23 +30,33 @@ export function ActionBar({ result }: { result: CalculationResult }) {
   }
 
   return (
-    <Card>
-      <CardContent className="flex flex-col gap-3 p-4 sm:flex-row sm:flex-wrap">
-        <Button onClick={onIcs} disabled={busy !== null} className="flex-1">
-          <CalendarPlus />
-          {busy === "ics" ? "Preparing…" : "Add all milestones to Google / Apple Calendar"}
-        </Button>
-        <Button variant="secondary" onClick={onPdf} disabled={busy !== null} className="flex-1">
-          <FileDown />
-          {busy === "pdf" ? "Preparing…" : "Download printable PDF ritual checklist"}
-        </Button>
-        <Button variant="outline" className="flex-1" asChild>
-          <a href={whatsAppShareUrl(result)} target="_blank" rel="noopener noreferrer">
-            <Share2 />
-            Share schedule via WhatsApp
-          </a>
-        </Button>
-      </CardContent>
-    </Card>
+    <div className="grid grid-cols-3 gap-1.5">
+      <Button
+        onClick={onIcs}
+        disabled={busy !== null}
+        variant="secondary"
+        size="sm"
+        className="h-9 px-2 text-xs"
+      >
+        <CalendarPlus />
+        {busy === "ics" ? "…" : "Calendar"}
+      </Button>
+      <Button
+        variant="secondary"
+        onClick={onPdf}
+        disabled={busy !== null}
+        size="sm"
+        className="h-9 px-2 text-xs"
+      >
+        <FileDown />
+        {busy === "pdf" ? "…" : "PDF"}
+      </Button>
+      <Button variant="outline" size="sm" className="h-9 px-2 text-xs" asChild>
+        <a href={whatsAppShareUrl(result)} target="_blank" rel="noopener noreferrer">
+          <Share2 />
+          WhatsApp
+        </a>
+      </Button>
+    </div>
   );
 }
